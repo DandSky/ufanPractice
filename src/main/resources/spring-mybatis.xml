@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+">
+
+    <!--引入数据库配置-->
+    <context:property-placeholder location="classpath:properties/config.properties"/>
+
+    <!-- 2.开启spring ioc注解及扫描 -->
+    <context:annotation-config/>
+    <context:component-scan base-package="com.ufan"/>
+
+    <!-- 编写mybatis的配置 -->
+    <!-- 3.配置连接池 druid -->
+    <!--    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+              init-method="init" destroy-method="close">
+            <property name="url" value="${jdbc.url}"/>
+            <property name="username" value="${jdbc.username}"/>
+            <property name="password" value="${jdbc.password}"/>
+            &lt;!&ndash; 数据源初始化自动创建10个连接 &ndash;&gt;
+            <property name="initialSize" value="${initialSize}"/>
+            <property name="maxActive" value="${maxActive}"/>
+            <property name="minIdle" value="${minIdle}"/>
+            <property name="maxWait" value="${maxWait}"/>
+        </bean>-->
+
+    <!-- 4.配置sqlsessionfactroy -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+<!--           &lt;!&ndash; 4.1配置数据源 &ndash;&gt;-->
+           <property name="dataSource" ref="dataSource"/>
+<!--           &lt;!&ndash; 4.2加载mapper文件 &ndash;&gt;-->
+           <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+<!--           &lt;!&ndash; 4.3给pojo下面的类，起别名 &ndash;&gt;-->
+<!--           <property name="typeAliasesPackage" value="cn.ufan.pojo"/>-->
+<!--           &lt;!&ndash; 4.4配置PageHelper的参数实现分页  spring4.0以上的配置方法  spring3的配置不一样 &ndash;&gt;-->
+<!--           <property name="plugins">-->
+<!--               <array>-->
+<!--                   <bean class="com.github.pagehelper.PageInterceptor">-->
+<!--                       <property name="properties">-->
+<!--                           <value>-->
+<!--                               helperDialect=mysql-->
+<!--                               reasonable=true-->
+<!--                           </value>-->
+<!--                       </property>-->
+<!--                   </bean>-->
+<!--               </array>-->
+<!--           </property>-->
+    </bean>
+
+
+
+    <!-- 5.配置扫描器 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--5.1 将映射文件与接口建立关联 -->
+        <property name="basePackage" value="com.ufan.dao"/>
+        <!-- 5.2此处配置的是value 防止读取不到db.properties配置文件中的信息 -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+
+
+    <!-- 6.配置事务 -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!-- 开启事务的注解 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" >
+        <!-- 不使用properties来配置 -->
+        <!-- <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+            <property name="url" value="jdbc:mysql://localhost:3306/learning" />
+            <property name="username" value="root" />
+            <property name="password" value="christmas258@" /> -->
+        <!-- 使用properties来配置 -->
+
+        <property name="driverClassName">
+            <value>${jdbc.driver}</value>
+        </property>
+        <property name="url">
+            <value>${jdbc.url}</value>
+        </property>
+        <property name="username">
+            <value>${jdbc.username}</value>
+        </property>
+        <property name="password">
+            <value>${jdbc.password}</value>
+        </property>
+    </bean>
+</beans>
+

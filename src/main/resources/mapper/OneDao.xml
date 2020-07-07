@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ufan.dao.OneDao"><!--对应dao层-->
+
+    <select id="findAll" resultType="com.ufan.entity.One">
+        SELECT * FROM ONE
+    </select>
+
+    <select id="findPassword" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT PASSWORD FROM ONE WHERE NAME = #{name}
+    </select>
+
+    <select id="find" parameterType="int" resultType="com.ufan.entity.One">
+        SELECT ID,NAME,PASSWORD FROM ONE WHERE ID = #{id}
+    </select>
+
+</mapper>
